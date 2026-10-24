@@ -113,7 +113,6 @@ export const WorkoutProvider = ({
     chatroomnumber:0,
     chatroom__free:false,
     chatroom_id_number:0,
-    waiting_list:false
   });
 
   const startWorkout = () => {

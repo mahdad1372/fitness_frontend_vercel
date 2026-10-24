@@ -6,7 +6,7 @@ import { MoreDotIcon } from "../../icons";
 import { useState,useEffect } from "react";
 import Cookies from "js-cookie"; 
 export default function CaloriesChart() {
-  const [foods, setfoods] = useState<{ day: string; calories: number }[]>([]);
+  const [foods, setfoods] = useState<{ day: string; protein: number }[]>([]);
   const options: ApexOptions = {
     colors: ["#465fff"],
     chart: {
@@ -111,7 +111,7 @@ export default function CaloriesChart() {
           }
   
           const data = await response.json();
-          const proteinWithDayName = data.map(item => ({
+          const proteinWithDayName = data.map((item: any) => ({
           day: new Date(item.createdAt).toLocaleDateString("en-US", {
           weekday: "long",
           }),

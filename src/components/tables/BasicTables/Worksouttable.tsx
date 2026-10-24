@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function Worksouttable() {
- const [users, setUsers] = useState<User[]>([]);
+ const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
    const { formData, setFormData, startWorkout } = useWorkout();

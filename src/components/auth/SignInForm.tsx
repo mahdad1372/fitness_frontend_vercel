@@ -18,7 +18,7 @@ export default function SignInForm() {
   const navigate = useNavigate();
 
   // 🔐 LOGIN HANDLER
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -60,7 +60,7 @@ export default function SignInForm() {
     
 
     } catch (error) {
-      console.error("Login error:", error.message);
+      console.error("Login error:", (error as Error).message);
       alert("Login failed. Check your credentials.");
     } finally {
       setLoading(false);

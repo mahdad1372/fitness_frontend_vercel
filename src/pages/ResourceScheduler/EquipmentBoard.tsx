@@ -50,7 +50,7 @@ export default function EquipmentBoard() {
   // waiting for the next poll tick.
   useEffect(() => {
     const stompClient = new Client({
-      brokerURL: "ws://localhost:7000/ws",
+      brokerURL: "wss://fitness-backend-15563671567.europe-west8.run.app/ws",
       reconnectDelay: 5000,
       onConnect: () => {
         stompClient.subscribe("/topic/notifications", () => {

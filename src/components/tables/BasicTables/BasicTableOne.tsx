@@ -113,7 +113,7 @@ const tableData: Order[] = [
 
 export default function BasicTableOne() {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { formData, setFormData, startWorkout } = useWorkout();
     const fetchUsers = async () => {

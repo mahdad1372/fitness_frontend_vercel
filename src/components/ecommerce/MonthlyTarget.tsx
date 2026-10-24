@@ -58,7 +58,7 @@ export default function MonthlyTarget() {
     fetchBMI();
   }, []);
 
-  const series = [bmi.toFixed(2)];
+  const series = [Number(bmi.toFixed(2))];
   const options: ApexOptions = {
     colors: ["#465FFF"],
     chart: {

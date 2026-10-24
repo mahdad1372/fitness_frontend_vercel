@@ -111,7 +111,7 @@ export default function MonthlySalesChart() {
           }
   
           const data = await response.json();
-          const proteinWithDayName = data.map(item => ({
+          const proteinWithDayName = data.map((item: any) => ({
           day: new Date(item.createdAt).toLocaleDateString("en-US", {
           weekday: "long",
           }),

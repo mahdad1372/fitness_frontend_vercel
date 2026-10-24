@@ -124,7 +124,7 @@ useEffect(() => {
                 smoke
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                 {formData.smoke === 1 ? "Yes" : "No"}
+                 {formData.smoke === "1" ? "Yes" : "No"}
               </p>
             </div>
           </div>

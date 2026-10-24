@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { ServerToClientEvents, ClientToServerEvents } from "./typings";
 
 // Connect to Socket.IO server
-const socket: io.Socket<ServerToClientEvents, ClientToServerEvents> = io(
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   "http://localhost:9093"
 );
 
