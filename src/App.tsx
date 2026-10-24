@@ -46,6 +46,7 @@ export default function App() {
         <Routes>
           <Route index path="/" element={<SignIn />} />
           <Route element={<AppLayout />}>
+            <Route index path="/home" element={<Home />} />
             <Route path="/profile" element={<UserProfiles />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />

@@ -80,7 +80,7 @@ export default function SignUpForm() {
     <div className="flex flex-col flex-1 w-full overflow-y-auto lg:w-1/2 no-scrollbar">
       <div className="w-full max-w-md mx-auto mb-5 sm:pt-10">
         <Link
-          to="/"
+          to="/home"
           className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
         >
           <ChevronLeftIcon className="size-5" />

@@ -71,7 +71,7 @@ export default function SignInForm() {
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
         <Link
-          to="/"
+          to="/home"
           className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
         >
           <ChevronLeftIcon className="size-5" />
@@ -156,7 +156,7 @@ export default function SignInForm() {
               Return back to home page
             </Button>
             <Link
-                to="/"
+                to="/home"
                 className="text-sm text-brand-500"
               >
             <Button 
