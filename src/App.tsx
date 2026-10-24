@@ -44,8 +44,8 @@ export default function App() {
           <WorkoutProvider>
         <ScrollToTop />
         <Routes>
+          <Route index path="/" element={<SignIn />} />
           <Route element={<AppLayout />}>
-            <Route index path="/" element={<Home />} />
             <Route path="/profile" element={<UserProfiles />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
