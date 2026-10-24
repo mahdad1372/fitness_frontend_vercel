@@ -1,0 +1,160 @@
+{
+  "exercises": [
+    {
+      "name": "Bench Press",
+      "type": "Chest"
+    },
+    {
+      "name": "Incline Dumbbell Press",
+      "type": "Chest"
+    },
+    {
+      "name": "Incline Bench Press",
+      "type": "Chest"
+    },
+    {
+      "name": "Chest Fly",
+      "type": "Chest"
+    },
+    {
+      "name": "Chest Dips",
+      "type": "Chest"
+    },
+    {
+      "name": "Push Ups",
+      "type": "Chest"
+    },
+    {
+      "name": "Tricep Pushdown",
+      "type": "Triceps"
+    },
+    {
+      "name": "Tricep Extension",
+      "type": "Triceps"
+    },
+    {
+      "name": "Pull Ups",
+      "type": "Back"
+    },
+    {
+      "name": "Barbell Row",
+      "type": "Back"
+    },
+    {
+      "name": "Lat Pulldown",
+      "type": "Back"
+    },
+    {
+      "name": "Seated Row",
+      "type": "Back"
+    },
+    {
+      "name": "Bicep Curl",
+      "type": "Biceps"
+    },
+    {
+      "name": "Hammer Curl",
+      "type": "Biceps"
+    },
+    {
+      "name": "Shoulder Press",
+      "type": "Shoulders"
+    },
+    {
+      "name": "Overhead Press",
+      "type": "Shoulders"
+    },
+    {
+      "name": "Lateral Raise",
+      "type": "Shoulders"
+    },
+    {
+      "name": "Shrugs",
+      "type": "Shoulders"
+    },
+    {
+      "name": "Squat",
+      "type": "Legs"
+    },
+    {
+      "name": "Barbell Squat",
+      "type": "Legs"
+    },
+    {
+      "name": "Front Squat",
+      "type": "Legs"
+    },
+    {
+      "name": "Leg Press",
+      "type": "Legs"
+    },
+    {
+      "name": "Romanian Deadlift",
+      "type": "Hamstrings"
+    },
+    {
+      "name": "Deadlift",
+      "type": "Posterior Chain"
+    },
+    {
+      "name": "Walking Lunges",
+      "type": "Legs"
+    },
+    {
+      "name": "Calf Raise",
+      "type": "Calves"
+    },
+    {
+      "name": "Jump Squats",
+      "type": "Legs"
+    },
+    {
+      "name": "Plank",
+      "type": "Core"
+    },
+    {
+      "name": "Russian Twist",
+      "type": "Core"
+    },
+    {
+      "name": "Leg Raise",
+      "type": "Core"
+    },
+    {
+      "name": "Jogging",
+      "type": "Cardio"
+    },
+    {
+      "name": "Walking",
+      "type": "Cardio"
+    },
+    {
+      "name": "Cycling",
+      "type": "Cardio"
+    },
+    {
+      "name": "Treadmill Walking",
+      "type": "Cardio"
+    },
+    {
+      "name": "Battle Rope",
+      "type": "Conditioning"
+    },
+    {
+      "name": "Jump Rope",
+      "type": "Conditioning"
+    },
+    {
+      "name": "Burpees",
+      "type": "Conditioning"
+    },
+    {
+      "name": "Mountain Climbers",
+      "type": "Conditioning"
+    },
+    {
+      "name": "Stretching",
+      "type": "Mobility"
+    }
+  ]
+}

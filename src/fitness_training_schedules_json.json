@@ -1,0 +1,219 @@
+{
+  "muscle_gain": {
+    "days_per_week": 5,
+    "schedule": {
+      "monday": {
+        "focus": "Chest + Triceps",
+        "exercises": [
+          { "name": "Bench Press", "sets": 4, "reps": "8-10" },
+          { "name": "Incline Dumbbell Press", "sets": 3, "reps": "10-12" },
+          { "name": "Chest Fly", "sets": 3, "reps": "12-15" },
+          { "name": "Tricep Pushdown", "sets": 3, "reps": "12" }
+        ]
+      },
+      "tuesday": {
+        "focus": "Back + Biceps",
+        "exercises": [
+          { "name": "Pull Ups", "sets": 4, "reps": "8-10" },
+          { "name": "Barbell Row", "sets": 4, "reps": "8-10" },
+          { "name": "Lat Pulldown", "sets": 3, "reps": "10-12" },
+          { "name": "Bicep Curl", "sets": 3, "reps": "12" }
+        ]
+      },
+      "wednesday": {
+        "focus": "Rest",
+        "exercises": []
+      },
+      "thursday": {
+        "focus": "Legs",
+        "exercises": [
+          { "name": "Squat", "sets": 4, "reps": "8-10" },
+          { "name": "Leg Press", "sets": 4, "reps": "10-12" },
+          { "name": "Romanian Deadlift", "sets": 3, "reps": "10" },
+          { "name": "Calf Raise", "sets": 4, "reps": "15" }
+        ]
+      },
+      "friday": {
+        "focus": "Shoulders + Arms",
+        "exercises": [
+          { "name": "Shoulder Press", "sets": 4, "reps": "8-10" },
+          { "name": "Lateral Raise", "sets": 3, "reps": "12-15" },
+          { "name": "Hammer Curl", "sets": 3, "reps": "12" },
+          { "name": "Tricep Extension", "sets": 3, "reps": "12" }
+        ]
+      }
+    }
+  },
+
+  "fat_loss": {
+    "days_per_week": 5,
+    "schedule": {
+      "monday": {
+        "focus": "Full Body + Cardio",
+        "exercises": [
+          { "name": "Squat", "sets": 4, "reps": "10-12" },
+          { "name": "Bench Press", "sets": 4, "reps": "10" },
+          { "name": "Lat Pulldown", "sets": 3, "reps": "12" },
+          { "name": "Treadmill Walking", "sets": 1, "reps": "20 min" }
+        ]
+      },
+      "tuesday": {
+        "focus": "Cardio + Core",
+        "exercises": [
+          { "name": "Jogging", "sets": 1, "reps": "30 min" },
+          { "name": "Plank", "sets": 3, "reps": "1 min" },
+          { "name": "Russian Twist", "sets": 3, "reps": "20" },
+          { "name": "Leg Raise", "sets": 3, "reps": "15" }
+        ]
+      },
+      "wednesday": {
+        "focus": "Upper Body",
+        "exercises": [
+          { "name": "Push Ups", "sets": 3, "reps": "Max" },
+          { "name": "Seated Row", "sets": 4, "reps": "12" },
+          { "name": "Incline Dumbbell Press", "sets": 3, "reps": "10-12" },
+          { "name": "Bicep Curl", "sets": 3, "reps": "12" }
+        ]
+      },
+      "thursday": {
+        "focus": "Lower Body + Conditioning",
+        "exercises": [
+          { "name": "Deadlift", "sets": 4, "reps": "8" },
+          { "name": "Walking Lunges", "sets": 3, "reps": "1 min"},
+          { "name": "Leg Press", "sets": 4, "reps": "12" },
+          { "name": "Battle Rope", "sets": 5, "reps": "1 min" }
+        ]
+      },
+      "friday": {
+        "focus": "HIIT + Full Body Circuit",
+        "exercises": [
+          { "name": "Burpees", "sets": 4, "reps": "15" },
+          { "name": "Jump Squats", "sets": 4, "reps": "15" },
+          { "name": "Mountain Climbers", "sets": 4, "reps": "1 min" },
+          { "name": "Push Ups", "sets": 3, "reps": "12" }
+        ]
+      }
+    }
+  },
+
+  "strength": {
+    "days_per_week": 4,
+    "schedule": {
+      "monday": {
+        "focus": "Squat Day",
+        "exercises": [
+          { "name": "Barbell Squat", "sets": 5, "reps": "5" },
+          { "name": "Front Squat", "sets": 4, "reps": "6" },
+          { "name": "Leg Press", "sets": 3, "reps": "8" }
+        ]
+      },
+      "tuesday": {
+        "focus": "Bench Press Day",
+        "exercises": [
+          { "name": "Bench Press", "sets": 5, "reps": "5" },
+          { "name": "Incline Bench Press", "sets": 4, "reps": "6" },
+          { "name": "Chest Dips", "sets": 3, "reps": "10" }
+        ]
+      },
+      "thursday": {
+        "focus": "Deadlift Day",
+        "exercises": [
+          { "name": "Deadlift", "sets": 5, "reps": "5" },
+          { "name": "Barbell Row", "sets": 4, "reps": "6-8" },
+          { "name": "Pull Ups", "sets": 4, "reps": "8" }
+        ]
+      },
+      "friday": {
+        "focus": "Overhead Press Day",
+        "exercises": [
+          { "name": "Overhead Press", "sets": 5, "reps": "5" },
+          { "name": "Lateral Raise", "sets": 3, "reps": "12" },
+          { "name": "Shrugs", "sets": 4, "reps": "10" }
+        ]
+      }
+    }
+  },
+
+  "fitness": {
+    "days_per_week": 4,
+    "schedule": {
+      "monday": {
+        "focus": "Full Body",
+        "exercises": [
+          { "name": "Squat", "sets": 3, "reps": "12" },
+          { "name": "Push Ups", "sets": 3, "reps": "15" },
+          { "name": "Lat Pulldown", "sets": 3, "reps": "12" }
+        ]
+      },
+      "tuesday": {
+        "focus": "Cardio",
+        "exercises": [
+          { "name": "Walking", "sets": 1, "reps": "30 min" },
+          { "name": "Cycling", "sets": 1, "reps": "20 min" }
+        ]
+      },
+      "wednesday": {
+        "focus": "Mobility + Core",
+        "exercises": [
+          { "name": "Stretching", "sets": 1, "reps": "15 min" },
+          { "name": "Plank", "sets": 3, "reps": "1 min" },
+          { "name": "Russian Twist", "sets": 3, "reps": "20" }
+        ]
+      },
+      "thursday": {
+        "focus": "Conditioning",
+        "exercises": [
+          { "name": "Battle Rope", "sets": 5, "reps": "1 min" },
+          { "name": "Jump Rope", "sets": 5, "reps": "1 min" },
+          { "name": "Burpees", "sets": 4, "reps": "12" }
+        ]
+      }
+    }
+  },
+
+  "recomposition": {
+    "days_per_week": 5,
+    "schedule": {
+      "monday": {
+        "focus": "Upper Body",
+        "exercises": [
+          { "name": "Bench Press", "sets": 4, "reps": "8-10" },
+          { "name": "Barbell Row", "sets": 4, "reps": "8-10" },
+          { "name": "Shoulder Press", "sets": 3, "reps": "10" }
+        ]
+      },
+      "tuesday": {
+        "focus": "Lower Body",
+        "exercises": [
+          { "name": "Squat", "sets": 4, "reps": "8-10" },
+          { "name": "Romanian Deadlift", "sets": 3, "reps": "10" },
+          { "name": "Leg Press", "sets": 3, "reps": "12" }
+        ]
+      },
+      "wednesday": {
+        "focus": "Cardio + Core",
+        "exercises": [
+          { "name": "Jogging", "sets": 1, "reps": "25 min" },
+          { "name": "Plank", "sets": 3, "reps": "1 min" },
+          { "name": "Leg Raise", "sets": 3, "reps": "15" }
+        ]
+      },
+      "thursday": {
+        "focus": "Push Day",
+        "exercises": [
+          { "name": "Bench Press", "sets": 4, "reps": "8-10" },
+          { "name": "Incline Dumbbell Press", "sets": 3, "reps": "10" },
+          { "name": "Tricep Pushdown", "sets": 3, "reps": "12" }
+        ]
+      },
+      "friday": {
+        "focus": "Pull Day",
+        "exercises": [
+          { "name": "Pull Ups", "sets": 4, "reps": "8" },
+          { "name": "Barbell Row", "sets": 4, "reps": "8-10" },
+          { "name": "Hammer Curl", "sets": 3, "reps": "12" }
+        ]
+      }
+    }
+  }
+}

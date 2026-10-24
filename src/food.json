@@ -1,0 +1,218 @@
+{
+  "categories": {
+    "Vegetables": [
+      {
+        "name": "Broccoli",
+        "serving_size_g": 1,
+        "protein_g": 0.028,
+        "carbohydrates_g": 0.070,
+        "fats_g": 0.004,
+        "kcal": 0.35
+      },
+      {
+        "name": "Carrot",
+        "serving_size_g": 1,
+        "protein_g": 0.009,
+        "carbohydrates_g": 0.096,
+        "fats_g": 0.002,
+        "kcal": 0.41
+      },
+      {
+        "name": "Spinach",
+        "serving_size_g": 1,
+        "protein_g": 0.029,
+        "carbohydrates_g": 0.036,
+        "fats_g": 0.004,
+        "kcal": 0.23
+      },
+      {
+        "name": "Potato",
+        "serving_size_g": 1,
+        "protein_g": 0.020,
+        "carbohydrates_g": 0.170,
+        "fats_g": 0.001,
+        "kcal": 0.77
+      },
+      {
+        "name": "Tomato",
+        "serving_size_g": 1,
+        "protein_g": 0.009,
+        "carbohydrates_g": 0.039,
+        "fats_g": 0.002,
+        "kcal": 0.18
+      }
+    ],
+
+    "Fruits": [
+      {
+        "name": "Apple",
+        "serving_size_g": 1,
+        "protein_g": 0.003,
+        "carbohydrates_g": 0.138,
+        "fats_g": 0.002,
+        "kcal": 0.52
+      },
+      {
+        "name": "Banana",
+        "serving_size_g": 1,
+        "protein_g": 0.011,
+        "carbohydrates_g": 0.228,
+        "fats_g": 0.003,
+        "kcal": 0.89
+      },
+      {
+        "name": "Orange",
+        "serving_size_g": 1,
+        "protein_g": 0.009,
+        "carbohydrates_g": 0.118,
+        "fats_g": 0.001,
+        "kcal": 0.47
+      },
+      {
+        "name": "Strawberry",
+        "serving_size_g": 1,
+        "protein_g": 0.007,
+        "carbohydrates_g": 0.077,
+        "fats_g": 0.003,
+        "kcal": 0.32
+      },
+      {
+        "name": "Avocado",
+        "serving_size_g": 1,
+        "protein_g": 0.020,
+        "carbohydrates_g": 0.085,
+        "fats_g": 0.147,
+        "kcal": 1.60
+      }
+    ],
+
+    "Grains": [
+      {
+        "name": "Rice",
+        "serving_size_g": 1,
+        "protein_g": 0.027,
+        "carbohydrates_g": 0.280,
+        "fats_g": 0.003,
+        "kcal": 1.30
+      },
+      {
+        "name": "Oats",
+        "serving_size_g": 1,
+        "protein_g": 0.169,
+        "carbohydrates_g": 0.663,
+        "fats_g": 0.069,
+        "kcal": 3.89
+      },
+      {
+        "name": "Whole Wheat Bread",
+        "serving_size_g": 1,
+        "protein_g": 0.130,
+        "carbohydrates_g": 0.490,
+        "fats_g": 0.042,
+        "kcal": 2.47
+      },
+      {
+        "name": "Pasta",
+        "serving_size_g": 1,
+        "protein_g": 0.050,
+        "carbohydrates_g": 0.250,
+        "fats_g": 0.011,
+        "kcal": 1.31
+      },
+      {
+        "name": "Quinoa",
+        "serving_size_g": 1,
+        "protein_g": 0.044,
+        "carbohydrates_g": 0.213,
+        "fats_g": 0.019,
+        "kcal": 1.20
+      }
+    ],
+
+    "Protein": [
+      {
+        "name": "Chicken Breast",
+        "serving_size_g": 1,
+        "protein_g": 0.310,
+        "carbohydrates_g": 0.000,
+        "fats_g": 0.036,
+        "kcal": 1.65
+      },
+      {
+        "name": "Beef",
+        "serving_size_g": 1,
+        "protein_g": 0.260,
+        "carbohydrates_g": 0.000,
+        "fats_g": 0.150,
+        "kcal": 2.50
+      },
+      {
+        "name": "Salmon",
+        "serving_size_g": 1,
+        "protein_g": 0.200,
+        "carbohydrates_g": 0.000,
+        "fats_g": 0.130,
+        "kcal": 2.08
+      },
+      {
+        "name": "Egg",
+        "serving_size_g": 1,
+        "protein_g": 0.130,
+        "carbohydrates_g": 0.011,
+        "fats_g": 0.110,
+        "kcal": 1.55
+      },
+      {
+        "name": "Tofu",
+        "serving_size_g": 1,
+        "protein_g": 0.080,
+        "carbohydrates_g": 0.019,
+        "fats_g": 0.048,
+        "kcal": 0.76
+      }
+    ],
+
+    "Dairy": [
+      {
+        "name": "Milk",
+        "serving_size_g": 1,
+        "protein_g": 0.034,
+        "carbohydrates_g": 0.050,
+        "fats_g": 0.010,
+        "kcal": 0.42
+      },
+      {
+        "name": "Yogurt",
+        "serving_size_g": 1,
+        "protein_g": 0.100,
+        "carbohydrates_g": 0.036,
+        "fats_g": 0.004,
+        "kcal": 0.59
+      },
+      {
+        "name": "Cheddar Cheese",
+        "serving_size_g": 1,
+        "protein_g": 0.250,
+        "carbohydrates_g": 0.013,
+        "fats_g": 0.330,
+        "kcal": 4.03
+      },
+      {
+        "name": "Cottage Cheese",
+        "serving_size_g": 1,
+        "protein_g": 0.110,
+        "carbohydrates_g": 0.034,
+        "fats_g": 0.043,
+        "kcal": 0.98
+      },
+      {
+        "name": "Greek Yogurt",
+        "serving_size_g": 1,
+        "protein_g": 0.103,
+        "carbohydrates_g": 0.039,
+        "fats_g": 0.004,
+        "kcal": 0.59
+      }
+    ]
+  }
+}
