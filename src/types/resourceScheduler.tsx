@@ -35,7 +35,7 @@ export interface SessionRequestDto {
   equipmentName: string | null;
   startTime: string; // ISO datetime string
   endTime: string;
-  status: "PENDING" | "ACCEPTED" | "REJECTED";
+  status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
   // Cardiovascular Risk -> Trainer & Equipment Scheduler: true when the
   // requested end time had to be pulled in because it exceeded this
   // student's current risk-based session ceiling.
@@ -79,4 +79,35 @@ export interface EquipmentQueueEntryDto {
   userName: string;
   joinedAt: string;
   position: number; // 1-based
+}
+
+// Audit trail for the "coach cancelled -> automatic replacement" workflow.
+// A PROCESSING row is created and resolved to COMPLETED/FAILED within the
+// same backend transaction, so in practice you'll almost always see it
+// already resolved by the time a poll picks it up - recovery runs
+// synchronously and fast, the same way the optimizer itself does.
+export interface RecoveryEventDto {
+  eventId: number;
+  requestId: number;
+  studentId: number;
+  triggerType: string;
+  status: "PROCESSING" | "COMPLETED" | "FAILED";
+  reason: string | null;
+  message: string | null;
+  recoveryDurationMs: number | null;
+  createdAt: string;
+  completedAt: string | null;
+  oldCoachId: number | null;
+  oldCoachName: string | null;
+  newCoachId: number | null;
+  newCoachName: string | null;
+  equipmentId: number | null;
+  equipmentName: string | null;
+  startTime: string | null;
+  endTime: string | null;
+}
+
+export interface CancelSessionPayload {
+  coachId: number;
+  reason: string;
 }

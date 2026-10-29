@@ -8,6 +8,7 @@ import {
   OptimizeScheduleResponse,
   EquipmentStatusDto,
   EquipmentQueueEntryDto,
+  RecoveryEventDto,
 } from "../types/resourceScheduler";
 
 const BASE_URL = "https://fitness-backend-15563671567.europe-west8.run.app";
@@ -185,5 +186,80 @@ export async function fetchEquipmentQueue(equipmentId: number): Promise<Equipmen
     headers: authHeaders(),
   });
   if (!response.ok) throw new Error("Failed to fetch equipment queue");
+  return response.json();
+}
+
+// ==========================
+// Coach session management - "My Sessions" panel + cancellation, which is
+// the trigger for the automatic recovery/reassignment workflow below.
+// ==========================
+
+// Coach resolving one of their own PENDING requests directly, instead of
+// waiting on the student's Optimize Schedule run. The backend still
+// conflict-checks accept() the same way the optimizer would.
+export async function acceptSessionRequest(requestId: number, coachId: number): Promise<SessionRequestDto> {
+  const response = await fetch(`${BASE_URL}/api/session-requests/${requestId}/accept`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ coachId }),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Failed to accept this session (${response.status})`);
+  }
+  return response.json();
+}
+
+export async function rejectSessionRequest(requestId: number, coachId: number): Promise<SessionRequestDto> {
+  const response = await fetch(`${BASE_URL}/api/session-requests/${requestId}/reject`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ coachId }),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Failed to reject this session (${response.status})`);
+  }
+  return response.json();
+}
+
+export async function fetchSessionsByCoach(coachId: number): Promise<SessionRequestDto[]> {
+  const response = await fetch(`${BASE_URL}/api/session-requests/coach/${coachId}`, {
+    method: "GET",
+    headers: authHeaders(),
+  });
+  if (!response.ok) throw new Error(`Failed to fetch your sessions (${response.status})`);
+  return response.json();
+}
+
+// Cancelling here is what kicks off RecoveryService server-side: the
+// returned RecoveryEventDto already reflects the outcome (COMPLETED with a
+// new coach, or FAILED) since recovery runs synchronously in the same
+// request - no need to poll immediately after this resolves.
+export async function cancelSessionRequest(
+  requestId: number,
+  coachId: number,
+  reason: string
+): Promise<RecoveryEventDto> {
+  const response = await fetch(`${BASE_URL}/api/session-requests/${requestId}/cancel`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ coachId, reason }),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Failed to cancel this session (${response.status})`);
+  }
+  return response.json();
+}
+
+// Polled by the student's Resource Scheduler page so a cancellation they
+// didn't initiate still shows up without a page reload.
+export async function fetchRecoveryEvents(studentId: number): Promise<RecoveryEventDto[]> {
+  const response = await fetch(`${BASE_URL}/api/recovery-events/student/${studentId}`, {
+    method: "GET",
+    headers: authHeaders(),
+  });
+  if (!response.ok) throw new Error(`Failed to fetch recovery updates (${response.status})`);
   return response.json();
 }

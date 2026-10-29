@@ -207,6 +207,15 @@ const navItems: NavItem[] = [
               path: "/resource-scheduler",
               pro: false,
             },
+            ...(role === "COACH"
+              ? [
+                  {
+                    name: "My Sessions",
+                    path: "/coach-sessions",
+                    pro: false,
+                  },
+                ]
+              : []),
           ],
         },
       ]

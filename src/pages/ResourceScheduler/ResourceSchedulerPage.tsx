@@ -20,6 +20,7 @@ import {
   optimizeSchedule,
   checkInEquipment,
   checkOutEquipment,
+  fetchRecoveryEvents,
 } from "../../api/resourceSchedulerApi";
 import {
   EquipmentDto,
@@ -27,6 +28,7 @@ import {
   MyCoachDto,
   SessionRequestDto,
   OptimizeScheduleResponse,
+  RecoveryEventDto,
 } from "../../types/resourceScheduler";
 import { fetchCurrentWeeklyPlan, setWeeklyPlanItemCompleted } from "../../api/weeklyPlannerApi";
 import { DAYS, DAY_LABELS, Day, PlannedExercise, WeeklyPlanResponse } from "../../types/weeklyPlanner";
@@ -87,6 +89,7 @@ export default function ResourceSchedulerPage() {
   const [coaches, setCoaches] = useState<CoachSummary[]>([]);
   const [myCoach, setMyCoach] = useState<MyCoachDto | null>(null);
   const [pending, setPending] = useState<SessionRequestDto[]>([]);
+  const [recoveryEvents, setRecoveryEvents] = useState<RecoveryEventDto[]>([]);
 const { setFormData } = useWorkout();
   // "My Coach" subscribe/change flow - price is typed in here because there
   // is no fixed coach-price catalog yet (see CoachSubscriptionService).
@@ -157,6 +160,33 @@ const { setFormData } = useWorkout();
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Recovery events: when a coach cancels one of this student's ACCEPTED
+  // sessions, the backend kicks off an automatic replacement search
+  // (RecoveryService) and records a RecoveryEvent. There's no websocket
+  // subscription wired up on this page, so a short poll is how the
+  // in-progress -> resolved/failed transition actually reaches the UI -
+  // same "poll every few seconds" pattern already used elsewhere in this
+  // app (e.g. the Live Equipment Board) rather than exclusively relying on
+  // the /topic/notifications STOMP broadcast.
+  useEffect(() => {
+    if (!studentId) return;
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const events = await fetchRecoveryEvents(studentId);
+        if (!cancelled) setRecoveryEvents(events);
+      } catch (err) {
+        console.error("Error fetching recovery updates:", err);
+      }
+    };
+    poll();
+    const interval = setInterval(poll, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [studentId]);
 
   // Separate from loadAll() on purpose: no saved plan yet is a normal,
   // expected state here (not every student has used Smart Weekly Planner),
@@ -808,6 +838,63 @@ function buildEquipmentReservationMessage(items: PlannedExercise[]): string | nu
                 </div>
               )}
             </ComponentCard>
+
+            {recoveryEvents.length > 0 && (
+              <ComponentCard
+                title="Recovery updates"
+                desc="When a coach cancels one of your accepted sessions, we automatically look for a replacement coach at the same time"
+              >
+                <div className="flex flex-col gap-3">
+                  {recoveryEvents.map((e) => {
+                    const tone =
+                      e.status === "PROCESSING" ? "warning" : e.status === "COMPLETED" ? "success" : "error";
+                    return (
+                      <div
+                        key={e.eventId}
+                        className={
+                          tone === "warning"
+                            ? "rounded-xl border border-warning-200 bg-warning-50 p-4 dark:border-warning-500/30 dark:bg-warning-500/10"
+                            : tone === "success"
+                            ? "rounded-xl border border-success-200 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/10"
+                            : "rounded-xl border border-error-200 bg-error-50 p-4 dark:border-error-500/30 dark:bg-error-500/10"
+                        }
+                      >
+                        <div className="flex items-start gap-3">
+                          {e.status === "PROCESSING" && (
+                            <span className="mt-0.5 h-3.5 w-3.5 flex-none animate-spin rounded-full border-2 border-warning-200 border-t-warning-500" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className={
+                                tone === "warning"
+                                  ? "text-sm font-semibold text-warning-600"
+                                  : tone === "success"
+                                  ? "text-sm font-semibold text-success-600"
+                                  : "text-sm font-semibold text-error-600"
+                              }
+                            >
+                              {e.status === "PROCESSING" &&
+                                `Finding a replacement${e.startTime ? ` for your ${formatDateTime(e.startTime)} session` : ""}`}
+                              {e.status === "COMPLETED" &&
+                                `Session reassigned${e.newCoachName ? ` to ${e.newCoachName}` : ""}`}
+                              {e.status === "FAILED" && "Couldn't find a replacement"}
+                            </p>
+                            <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                              {e.oldCoachName ? `${e.oldCoachName} cancelled` : "Your coach cancelled"}
+                              {e.equipmentName ? ` · ${e.equipmentName}` : ""}
+                              {e.startTime && e.endTime
+                                ? ` · ${formatDateTime(e.startTime)} → ${formatDateTime(e.endTime)}`
+                                : ""}
+                              {e.message ? ` — ${e.message}` : ""}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </ComponentCard>
+            )}
 
             <ComponentCard
               title="Pending requests"

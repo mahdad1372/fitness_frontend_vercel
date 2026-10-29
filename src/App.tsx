@@ -37,6 +37,7 @@ import SmartWeeklyPlanner from "./pages/WeeklyPlanner/SmartWeeklyPlanner";
 import SmartMealPlanner from "./pages/MealPlanner/SmartMealPlanner";
 import CardiovascularRiskPage from "./pages/CardiovascularRisk/CardiovascularRiskPage";
 import ResourceSchedulerPage from "./pages/ResourceScheduler/ResourceSchedulerPage";
+import CoachSessionsPage from "./pages/CoachSessions/CoachSessionsPage";
 export default function App() {
   return (
     <>
@@ -78,6 +79,7 @@ export default function App() {
             <Route path="/aichat" element={<AIChatPage />} />
             <Route path="/Waitinglist" element={<Waiting_list />} />
             <Route path="/resource-scheduler" element={<ResourceSchedulerPage />} />
+            <Route path="/coach-sessions" element={<CoachSessionsPage />} />
           </Route>
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
