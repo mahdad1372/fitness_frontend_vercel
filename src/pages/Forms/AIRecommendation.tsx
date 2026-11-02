@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Cookies from "js-cookie";
+import BodyProgressViewer from "../../components/BodyProgress/BodyProgressViewer";
 
 export default function AIRecommendation() {
   const [recommendation, setRecommendation] = useState("");
@@ -43,7 +44,9 @@ export default function AIRecommendation() {
   };
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
+    <div className="flex flex-col gap-6">
+      <BodyProgressViewer />
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
       <div className="flex items-center justify-between mb-5">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -80,6 +83,7 @@ export default function AIRecommendation() {
           </p>
         </div>
       )}
+      </div>
     </div>
   );
 }

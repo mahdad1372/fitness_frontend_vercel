@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Cookies from "js-cookie";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -35,6 +35,10 @@ import { DAYS, DAY_LABELS, Day, PlannedExercise, WeeklyPlanResponse } from "../.
 import { difficultyTier, TIER_BADGE_COLOR } from "../../types/exerciseGraph";
 import Badge from "../../components/ui/badge/Badge";
 import LiveSessionPage from "../LiveSession/LiveSessionPage";
+import BodyProgressViewer, {
+  classifyMuscleGroupRegion,
+  type Region,
+} from "../../components/BodyProgress/BodyProgressViewer";
 
 function formatPlanTime(iso: string): string {
   return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -122,6 +126,24 @@ const { setFormData } = useWorkout();
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlanResponse | null>(null);
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
 
+  // Per-region planned vs. completed counts across the whole saved week -
+  // lets the Body Progress card show a real "X% of plan done" figure for a
+  // muscle group with no prior week to compare against, instead of a
+  // made-up percentage or just a raw count.
+  const planCompletionByRegion = useMemo(() => {
+    if (!weeklyPlan) return undefined;
+    const totals: Partial<Record<Region, { completed: number; planned: number }>> = {};
+    Object.values(weeklyPlan.planByDay).forEach((items) => {
+      items.forEach((item) => {
+        const region = classifyMuscleGroupRegion(item.muscleGroup);
+        if (!totals[region]) totals[region] = { completed: 0, planned: 0 };
+        totals[region]!.planned += 1;
+        if (item.completed) totals[region]!.completed += 1;
+      });
+    });
+    return totals;
+  }, [weeklyPlan]);
+
   // Which weekly-plan item, if any, currently has its Live Session open.
   // Only one at a time - the Start button on every other row hides itself
   // while this is set (see the render below).
@@ -132,6 +154,22 @@ const { setFormData } = useWorkout();
   // capacity, or someone else grabbed it during a rest break. Never stops
   // the live session itself; it's only the board sync that failed.
   const [equipmentNotice, setEquipmentNotice] = useState<string | null>(null);
+
+  // Bumped after every successful exercise completion toggle, so the Body
+  // Progress model below refetches this week's muscle-group trend instead
+  // of only showing what it had on page load.
+  const [bodyProgressRefreshKey, setBodyProgressRefreshKey] = useState(0);
+
+  // The muscle region of whichever exercise is currently live (Start
+  // clicked, not yet Finished/Cancelled) - lights that one region up green
+  // on the body model while it's in progress, and clears back to neutral
+  // in handleEndItem once the student finishes or cancels it.
+  const [activeRegion, setActiveRegion] = useState<Region | null>(null);
+
+  // Fired once per completed set so the body model can play a quick
+  // "that muscle just got bigger" pump animation - nonce (not just the
+  // region) so finishing the same region twice in a row still replays it.
+  const [pulseSignal, setPulseSignal] = useState<{ region: Region; nonce: number } | null>(null);
 
   const studentId = Number(Cookies.get("userId"));
 
@@ -233,6 +271,7 @@ function buildEquipmentReservationMessage(items: PlannedExercise[]): string | nu
 
     try {
       await setWeeklyPlanItemCompleted(item.itemId, studentId, nextCompleted);
+      setBodyProgressRefreshKey((k) => k + 1);
     } catch (err) {
       console.error("Error updating exercise status:", err);
       setWeeklyPlan((prev) => {
@@ -301,6 +340,7 @@ function buildEquipmentReservationMessage(items: PlannedExercise[]): string | nu
   // error is surfaced as a dismissible notice, not a blocker.
   const handleStartItem = async (item: PlannedExercise) => {
     setLiveItemId(item.itemId);
+    setActiveRegion(classifyMuscleGroupRegion(item.muscleGroup));
     setEquipmentNotice(null);
     const equipmentId = resolveEquipmentId(item.equipmentName);
     if (equipmentId == null) return;
@@ -331,6 +371,7 @@ function buildEquipmentReservationMessage(items: PlannedExercise[]): string | nu
       }
     }
     setLiveItemId(null);
+    setActiveRegion(null);
   };
 
   // Mid-workout rest breaks between sets (LiveSessionPage's own set/rest
@@ -632,6 +673,10 @@ function buildEquipmentReservationMessage(items: PlannedExercise[]): string | nu
                                         onEquipmentReserve={() => handleEquipmentReserve(item)}
                                         onFinished={() => {
                                           handleToggleCompleted(item, true);
+                                          setPulseSignal({
+                                            region: classifyMuscleGroupRegion(item.muscleGroup),
+                                            nonce: Date.now(),
+                                          });
                                           handleEndItem(item);
                                         }}
                                         onCancel={() => handleEndItem(item)}
@@ -646,6 +691,16 @@ function buildEquipmentReservationMessage(items: PlannedExercise[]): string | nu
                       );
                     })()
                   )}
+
+                  <div className="mt-6">
+                    <BodyProgressViewer
+                      refreshKey={bodyProgressRefreshKey}
+                      highlightActive={false}
+                      activeRegion={activeRegion}
+                      planCompletionByRegion={planCompletionByRegion}
+                      pulseSignal={pulseSignal}
+                    />
+                  </div>
                 </div>
               )}
             </ComponentCard>

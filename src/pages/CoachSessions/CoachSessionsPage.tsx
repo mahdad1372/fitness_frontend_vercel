@@ -50,6 +50,13 @@ export default function CoachSessionsPage() {
   const coachId = Number(Cookies.get("userId"));
 
   const [sessions, setSessions] = useState<SessionRequestDto[]>([]);
+  // Everything this coach has ever accepted - a simple "who did I say yes
+  // to" list, separate from "Upcoming sessions" above which drops an
+  // ACCEPTED row once its time has passed. Kept here so accepting a stale
+  // Pending request (common with this test data, whose dates are already
+  // in the past) does not just make it silently vanish with nothing to
+  // show for it.
+  const [acceptedSessions, setAcceptedSessions] = useState<SessionRequestDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,6 +82,11 @@ export default function CoachSessionsPage() {
       const upcoming = all.filter((s) => s.status === "PENDING" || new Date(s.endTime).getTime() >= now);
       upcoming.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
       setSessions(upcoming);
+
+      const accepted = all
+        .filter((s) => s.status === "ACCEPTED")
+        .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+      setAcceptedSessions(accepted);
     } catch (err) {
       console.error("Error fetching coach sessions:", err);
       setError(err instanceof Error ? err.message : "Failed to load your sessions.");
@@ -353,6 +365,41 @@ export default function CoachSessionsPage() {
                 </div>
               )}
             </>
+          )}
+        </ComponentCard>
+
+        <ComponentCard
+          title="Accepted sessions"
+          desc="Requests you've moved from Pending to Accepted"
+        >
+          {loading ? (
+            <div className="p-2 text-sm text-gray-400">Loading...</div>
+          ) : acceptedSessions.length === 0 ? (
+            <div className="text-sm text-gray-400 italic">No sessions accepted yet.</div>
+          ) : (
+            <div className="flex flex-col divide-y divide-gray-100 dark:divide-white/[0.05]">
+              {acceptedSessions.map((s) => (
+                <div key={s.requestId} className="flex items-center gap-3 py-3">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                    style={{ backgroundColor: avatarColor(s.studentId) }}
+                  >
+                    {initials(s.studentName)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap text-sm font-semibold text-gray-800 dark:text-white/90">
+                      {s.studentName}
+                      <Badge size="sm" color="success">Accepted</Badge>
+                      {s.cappedForRisk && <Badge size="sm" color="warning">Risk-capped</Badge>}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      {s.equipmentName ? `${s.equipmentName} · ` : ""}
+                      {formatTimeRange(s.startTime, s.endTime)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </ComponentCard>
       </div>
