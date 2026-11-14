@@ -39,8 +39,8 @@ export default function Goals() {
 
       const url =
         userRole === "ADMIN"
-          ? "https://fitness-backend-15563671567.europe-west8.run.app/goals/all"
-          : `https://fitness-backend-15563671567.europe-west8.run.app/goals/findbyuserid/${userId}`;
+          ? "http://localhost:7000/goals/all"
+          : `http://localhost:7000/goals/findbyuserid/${userId}`;
 
       const response = await fetch(url, {
         method: "GET",
@@ -85,7 +85,7 @@ export default function Goals() {
 
     try {
       const response = await fetch(
-        `https://fitness-backend-15563671567.europe-west8.run.app/goals/deletegoal/${goalId}`,
+        `http://localhost:7000/goals/deletegoal/${goalId}`,
         {
           method: "DELETE",
           headers: {
@@ -231,7 +231,7 @@ export default function Goals() {
                 </TableCell>
                 <TableCell className="px-4 py-3">
   <img
-    src={`https://fitness-backend-15563671567.europe-west8.run.app/goals/before-image/${goal.goal_id}`}
+    src={`http://localhost:7000/goals/before-image/${goal.goal_id}`}
     alt="Before Goal"
     className="w-20 h-20 object-cover rounded-lg border"
     onError={(e) => {
@@ -243,7 +243,7 @@ export default function Goals() {
 
                 <TableCell className="px-4 py-3">
                   <img
-                  src={`https://fitness-backend-15563671567.europe-west8.run.app/goals/after-image/${goal.goal_id}`}
+                  src={`http://localhost:7000/goals/after-image/${goal.goal_id}`}
                   alt="After Goal"
                   className="w-20 h-20 object-cover rounded-lg border"
                   onError={(e) => {

@@ -21,7 +21,7 @@ export default function AIRecommendation() {
       }
 
       const response = await fetch(
-        `https://fitness-backend-15563671567.europe-west8.run.app/api/recommendations/${userId}`,
+        `http://localhost:7000/api/recommendations/${userId}`,
         {
           method: "GET",
           headers: {

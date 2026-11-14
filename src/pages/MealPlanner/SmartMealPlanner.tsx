@@ -4,7 +4,6 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
 import Label from "../../components/form/Label";
-import Input from "../../components/form/input/InputField";
 import Checkbox from "../../components/form/input/Checkbox";
 import Select from "../../components/form/Select";
 import Button from "../../components/ui/button/Button";
@@ -20,7 +19,25 @@ import {
   calculateMacroTargets,
   FoodRow,
   MealPlanResponse,
+  scaleMacro,
 } from "../../types/mealPlanner";
+
+const DEFAULT_GRAMS = 100;
+const MAX_GRAMS = 5000;
+
+// The grams box holds raw text so the user can clear it mid-edit; this is
+// the number it represents, or null if it isn't a usable portion size.
+function parseGrams(text: string): number | null {
+  if (text.trim() === "") return null;
+  const n = Number(text);
+  return Number.isFinite(n) && n > 0 && n <= MAX_GRAMS ? n : null;
+}
+
+// One decimal place, dropping a trailing ".0" (53g of a 3.6g/100g food
+// shows "1.9", 100g of it shows "3.6", 200g shows "7.2").
+function fmt(n: number): string {
+  return String(Math.round(n * 10) / 10);
+}
 
 // Meter: fill carries severity (good/off/far off), the unfilled track is a
 // lighter step of the SAME hue rather than plain grey, and status is never
@@ -88,6 +105,9 @@ export default function SmartMealPlanner() {
 
   const [foods, setFoods] = useState<FoodRow[]>([]);
   const [excludedIds, setExcludedIds] = useState<Set<number>>(new Set());
+  // Raw text of each food's grams box, keyed by food_id. A food with no
+  // entry is at DEFAULT_GRAMS.
+  const [gramsText, setGramsText] = useState<Record<number, string>>({});
 
   const [generating, setGenerating] = useState(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
@@ -103,7 +123,11 @@ export default function SmartMealPlanner() {
         setAge(user.age);
         setGender(user.gender);
         setWeightKg(user.weight);
-        setHeightCm(user.height);
+        // User.height is stored (and shown everywhere else, e.g. the
+        // Profile page) in METERS, not centimeters despite this field's
+        // name - convert here so both the macro-target math below and the
+        // on-screen "cm" figure are actually in centimeters.
+        setHeightCm(Math.round(user.height * 100));
         setFoods(userFoods);
       } catch (err) {
         console.error("Error loading meal planner data:", err);
@@ -119,11 +143,6 @@ export default function SmartMealPlanner() {
     setTargetsManuallyEdited(false);
   };
 
-  const updateTarget = (field: keyof MacroTargets, value: number) => {
-    setTargets((prev) => ({ ...(prev ?? { calories: 0, protein: 0, carbs: 0, fat: 0 }), [field]: value }));
-    setTargetsManuallyEdited(true);
-  };
-
   const toggleFood = (foodId: number, checked: boolean) => {
     setExcludedIds((prev) => {
       const next = new Set(prev);
@@ -133,7 +152,16 @@ export default function SmartMealPlanner() {
     });
   };
 
+  const gramsTextOf = (foodId: number) => gramsText[foodId] ?? String(DEFAULT_GRAMS);
+
+  const setFoodGrams = (foodId: number, text: string) => {
+    setGramsText((prev) => ({ ...prev, [foodId]: text }));
+  };
+
   const candidateCount = foods.length;
+  const checkedFoods = foods.filter((f) => !excludedIds.has(f.food_id));
+  // Only checked foods are sent, so only their grams need to be valid.
+  const hasInvalidGrams = checkedFoods.some((f) => parseGrams(gramsTextOf(f.food_id)) === null);
 
   const handleOptimize = async () => {
     setGenerating(true);
@@ -141,6 +169,13 @@ export default function SmartMealPlanner() {
     setPlan(null);
     try {
       const userId = Number(Cookies.get("userId"));
+      // Checked foods with their portion sizes; the backend scales each
+      // food's per-100g macros by grams / 100 before optimizing.
+      // canOptimize guarantees every grams value here parses.
+      const portions = checkedFoods.map((f) => ({
+        foodId: f.food_id,
+        grams: parseGrams(gramsTextOf(f.food_id)) ?? DEFAULT_GRAMS,
+      }));
       const request = targetsManuallyEdited && targets
         ? {
             userId,
@@ -148,7 +183,7 @@ export default function SmartMealPlanner() {
             manualProtein: targets.protein,
             manualCarbs: targets.carbs,
             manualFat: targets.fat,
-            excludeFoodIds: Array.from(excludedIds),
+            foods: portions,
           }
         : {
             userId,
@@ -158,7 +193,7 @@ export default function SmartMealPlanner() {
             heightCm,
             goal,
             activityLevel,
-            excludeFoodIds: Array.from(excludedIds),
+            foods: portions,
           };
       const result = await generateMealPlan(request);
       setPlan(result);
@@ -184,7 +219,7 @@ export default function SmartMealPlanner() {
     return Array.from(slots);
   }, [plan]);
 
-  const canOptimize = candidateCount - excludedIds.size > 0 && !generating;
+  const canOptimize = checkedFoods.length > 0 && !hasInvalidGrams && !generating;
 
   return (
     <>
@@ -211,19 +246,23 @@ export default function SmartMealPlanner() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pb-4 mb-4 border-b border-gray-100 dark:border-white/[0.05]">
                 <div>
                   <Label>Age</Label>
-                  <Input type="number" value={age} onChange={(e) => setAge(Number(e.target.value))} />
+                  <div className="text-base font-semibold text-gray-800 dark:text-white/90">{age}</div>
                 </div>
                 <div>
                   <Label>Gender</Label>
-                  <Input type="text" value={gender} onChange={(e) => setGender(e.target.value)} />
+                  <div className="text-base font-semibold text-gray-800 dark:text-white/90 capitalize">{gender}</div>
                 </div>
                 <div>
                   <Label>Weight (kg)</Label>
-                  <Input type="number" value={weightKg} onChange={(e) => setWeightKg(Number(e.target.value))} />
+                  <div className="text-base font-semibold text-gray-800 dark:text-white/90">{weightKg} kg</div>
                 </div>
                 <div>
-                  <Label>Height (cm)</Label>
-                  <Input type="number" value={heightCm} onChange={(e) => setHeightCm(Number(e.target.value))} />
+                  <Label>Height (m)</Label>
+                  {/* heightCm itself stays real centimeters (see the load
+                      effect above) since that's what the macro-target
+                      formula needs - only this on-screen label is shown
+                      back in meters, same unit the Profile page uses. */}
+                  <div className="text-base font-semibold text-gray-800 dark:text-white/90">{(heightCm / 100).toFixed(1)} m</div>
                 </div>
               </div>
               <div className="flex flex-wrap items-end gap-4">
@@ -249,72 +288,117 @@ export default function SmartMealPlanner() {
 
             <ComponentCard
               title="Today's macro targets"
-              desc="Calculated from your profile and goal above (Mifflin-St Jeor BMR \u2192 TDEE \u2192 macro split) - adjust any of these before optimizing."
+              desc="Calculated from your profile and goal above (Mifflin-St Jeor BMR \u2192 TDEE \u2192 macro split)."
             >
               <div className="flex gap-4 flex-wrap">
                 <div className="w-[150px]">
                   <Label>Calories</Label>
-                  <Input
-                    type="number"
-                    value={targets?.calories ?? ""}
-                    onChange={(e) => updateTarget("calories", Number(e.target.value))}
-                  />
+                  <div className="text-base font-semibold text-gray-800 dark:text-white/90">{targets?.calories ?? "-"}</div>
                 </div>
                 <div className="w-[150px]">
                   <Label>Protein (g)</Label>
-                  <Input
-                    type="number"
-                    value={targets?.protein ?? ""}
-                    onChange={(e) => updateTarget("protein", Number(e.target.value))}
-                  />
+                  <div className="text-base font-semibold text-gray-800 dark:text-white/90">{targets?.protein ?? "-"}</div>
                 </div>
                 <div className="w-[150px]">
                   <Label>Carbs (g)</Label>
-                  <Input
-                    type="number"
-                    value={targets?.carbs ?? ""}
-                    onChange={(e) => updateTarget("carbs", Number(e.target.value))}
-                  />
+                  <div className="text-base font-semibold text-gray-800 dark:text-white/90">{targets?.carbs ?? "-"}</div>
                 </div>
                 <div className="w-[150px]">
                   <Label>Fat (g)</Label>
-                  <Input
-                    type="number"
-                    value={targets?.fat ?? ""}
-                    onChange={(e) => updateTarget("fat", Number(e.target.value))}
-                  />
+                  <div className="text-base font-semibold text-gray-800 dark:text-white/90">{targets?.fat ?? "-"}</div>
                 </div>
               </div>
               {!targets && (
                 <div className="mt-3 text-xs text-gray-400 italic">
-                  Click "Calculate Targets" above, or type numbers in directly.
+                  Click "Calculate Targets" above to see your numbers.
                 </div>
               )}
             </ComponentCard>
 
-            <ComponentCard title="Candidate foods" desc="All checked in by default - the optimizer picks which combination to actually use.">
+            <ComponentCard
+              title="Candidate foods"
+              desc="All checked in by default - the optimizer picks which combination to actually use. Set each food's portion in grams; its macros scale from the per-100g values."
+            >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-gray-500 dark:text-gray-400">
                   {candidateCount} foods from your log available today
                 </span>
               </div>
               <div className="flex flex-col divide-y divide-gray-100 dark:divide-white/[0.05]">
-                {foods.map((f) => (
-                  <div key={f.food_id} className="flex items-center justify-between py-2.5">
-                    <Checkbox
-                      id={`food-${f.food_id}`}
-                      label={`${f.food_name} (${f.category})`}
-                      checked={!excludedIds.has(f.food_id)}
-                      onChange={(checked) => toggleFood(f.food_id, checked)}
-                    />
-                    <div className="flex gap-4 text-xs text-gray-500 dark:text-gray-400">
-                      <span className="w-16 text-right">{f.calories} kcal</span>
-                      <span className="w-12 text-right">{f.protein}g P</span>
-                      <span className="w-12 text-right">{f.carbohydrates}g C</span>
-                      <span className="w-12 text-right">{f.fats}g F</span>
+                {foods.map((f) => {
+                  const text = gramsTextOf(f.food_id);
+                  const grams = parseGrams(text);
+                  const checked = !excludedIds.has(f.food_id);
+                  const invalid = grams === null;
+                  // While the box is invalid, show "-" rather than guessing.
+                  const show = (per100g: number) => (grams === null ? "-" : fmt(scaleMacro(per100g, grams)));
+                  // The optimizer treats all four daily targets as ceilings it can
+                  // never cross (see MealPlanner.java). If THIS PORTION ALONE already
+                  // exceeds one of them, no combination can ever include it, no matter
+                  // what else is checked - flag that here instead of only finding out
+                  // after clicking "Optimize My Day".
+                  const overTarget: string[] = [];
+                  if (checked && grams !== null && targets) {
+                    const flagIfOver = (per100g: number, target: number, unit: string, label: string) => {
+                      const amount = scaleMacro(per100g, grams);
+                      if (amount > target) {
+                        overTarget.push(`${label} (${fmt(amount)}${unit} vs ${target}${unit} target)`);
+                      }
+                    };
+                    flagIfOver(f.calories, targets.calories, " kcal", "calories");
+                    flagIfOver(f.protein, targets.protein, "g", "protein");
+                    flagIfOver(f.carbohydrates, targets.carbs, "g", "carbs");
+                    flagIfOver(f.fats, targets.fat, "g", "fat");
+                  }
+                  return (
+                    <div key={f.food_id} className="flex flex-col gap-1.5 py-2.5">
+                      <div className="flex items-center justify-between gap-4 flex-wrap">
+                      <Checkbox
+                        id={`food-${f.food_id}`}
+                        label={`${f.food_name} (${f.category})`}
+                        checked={checked}
+                        onChange={(next) => toggleFood(f.food_id, next)}
+                      />
+                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                        <label className="flex items-center gap-1.5">
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            min={1}
+                            max={MAX_GRAMS}
+                            step="any"
+                            value={text}
+                            disabled={!checked}
+                            aria-label={`Grams of ${f.food_name}`}
+                            aria-invalid={checked && invalid}
+                            onChange={(e) => setFoodGrams(f.food_id, e.target.value)}
+                            className={`h-8 w-20 rounded-lg border px-2 text-right text-sm bg-transparent text-gray-800 shadow-theme-xs focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 disabled:opacity-40 disabled:cursor-not-allowed ${
+                              checked && invalid
+                                ? "border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:border-error-500"
+                                : "border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:focus:border-brand-800"
+                            }`}
+                          />
+                          <span>g</span>
+                        </label>
+                        <span className="w-16 text-right">{show(f.calories)} kcal</span>
+                        <span className="w-12 text-right">{show(f.protein)}g P</span>
+                        <span className="w-12 text-right">{show(f.carbohydrates)}g C</span>
+                        <span className="w-12 text-right">{show(f.fats)}g F</span>
+                      </div>
                     </div>
+                    {overTarget.length > 0 && (
+                      <div className="text-xs text-warning-500 dark:text-warning-400 pl-1">
+                        ⚠ This portion alone already exceeds today's {overTarget.join(", ")} — the optimizer can never select it at this size, no matter what else is checked. Try a smaller portion.
+                      </div>
+                    )}
+                    </div>
+                  );
+                })}
+                {hasInvalidGrams && (
+                  <div className="pt-3 text-xs text-error-500">
+                    Enter a portion between 1 and {MAX_GRAMS} g for every checked food (or uncheck it).
                   </div>
-                ))}
+                )}
                 {foods.length === 0 && (
                   <div className="py-4 text-sm text-gray-400 italic">
                     No logged foods yet - add some from the Foods page first.
@@ -364,6 +448,11 @@ export default function SmartMealPlanner() {
                             >
                               <div className="text-sm font-semibold text-gray-800 dark:text-white/90 mb-1">
                                 {f.name}
+                                {f.grams != null && (
+                                  <span className="ml-1.5 font-normal text-gray-500 dark:text-gray-400">
+                                    &middot; {fmt(f.grams)} g
+                                  </span>
+                                )}
                               </div>
                               <div className="flex gap-3 text-xs text-gray-500 dark:text-gray-400">
                                 <span>{f.calories} kcal</span>
@@ -388,7 +477,10 @@ export default function SmartMealPlanner() {
                     <div className="flex flex-col divide-y divide-gray-100 dark:divide-white/[0.05]">
                       {plan.excludedFoods.map((f) => (
                         <div key={f.foodId} className="flex items-center justify-between py-2.5">
-                          <span className="text-sm text-gray-400 line-through">{f.name}</span>
+                          <span className="text-sm text-gray-400">
+                            <span className="line-through">{f.name}</span>
+                            {f.grams != null && <span> &middot; {fmt(f.grams)} g</span>}
+                          </span>
                           <span className="text-xs text-gray-400">
                             {f.calories} kcal &middot; {f.fat}g fat
                           </span>
@@ -399,7 +491,8 @@ export default function SmartMealPlanner() {
                 )}
 
                 <div className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                  Pipeline: candidate foods come from your logged catalog &rarr; each macro (calories, protein,
+                  Pipeline: candidate foods come from your logged catalog, each scaled from its per-100g values
+                  to the portion you entered &rarr; each macro (calories, protein,
                   carbs, fat) is discretized into buckets to keep a 4-dimensional state space computable &rarr; a
                   multi-dimensional 0/1 knapsack DP selects the subset of foods whose combined macros best fit all
                   four targets at once, rather than overshooting one to satisfy another.

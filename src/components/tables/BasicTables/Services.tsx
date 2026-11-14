@@ -34,7 +34,7 @@ export default function Services() {
         throw new Error("Unauthorized");
       }
 
-      const role = await fetch("https://fitness-backend-15563671567.europe-west8.run.app/users/me", {
+      const role = await fetch("http://localhost:7000/users/me", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ export default function Services() {
         throw new Error("Failed to fetch foods");
       }else{
         const Role = await role.json();
-        const url = `https://fitness-backend-15563671567.europe-west8.run.app/cart/findbyuserid/${userId}`;
+        const url = `http://localhost:7000/cart/findbyuserid/${userId}`;
 
       const response = await fetch(url, {
         method: "GET",

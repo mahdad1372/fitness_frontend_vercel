@@ -37,8 +37,8 @@ export default function Healthmetrics() {
 
       const url =
         userRole === "ADMIN"
-          ? "https://fitness-backend-15563671567.europe-west8.run.app/health_metric/all"
-          : `https://fitness-backend-15563671567.europe-west8.run.app/health_metric/${userId}`;
+          ? "http://localhost:7000/health_metric/all"
+          : `http://localhost:7000/health_metric/${userId}`;
 
       const response = await fetch(url, {
         method: "GET",
@@ -83,7 +83,7 @@ export default function Healthmetrics() {
 
     try {
       const response = await fetch(
-        `https://fitness-backend-15563671567.europe-west8.run.app/health_metric/deletehealth/${id}`,
+        `http://localhost:7000/health_metric/deletehealth/${id}`,
         {
           method: "DELETE",
           headers: {

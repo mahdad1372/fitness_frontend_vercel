@@ -43,7 +43,7 @@ export default function SignUpForm() {
     setLoading(true);
 
     try {
-      const response = await fetch("https://fitness-backend-15563671567.europe-west8.run.app/users/adduser", {
+      const response = await fetch("http://localhost:7000/users/adduser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

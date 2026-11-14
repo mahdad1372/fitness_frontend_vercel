@@ -61,7 +61,7 @@ export default function EcommerceMetrics() {
     const headers = { Authorization: `Bearer ${token}` };
 
     const fetchVitals = () => {
-      fetch(`https://fitness-backend-15563671567.europe-west8.run.app/virtual-sensor/blood-pressure/${userId}`, {
+      fetch(`http://localhost:7000/virtual-sensor/blood-pressure/${userId}`, {
         method: "GET",
         headers,
       })
@@ -86,7 +86,7 @@ export default function EcommerceMetrics() {
           setBpData((prev) => ({ ...prev, loading: false }));
         });
 
-      fetch(`https://fitness-backend-15563671567.europe-west8.run.app/virtual-sensor/heart-rate/${userId}`, {
+      fetch(`http://localhost:7000/virtual-sensor/heart-rate/${userId}`, {
         method: "GET",
         headers,
       })
@@ -129,7 +129,7 @@ export default function EcommerceMetrics() {
       return;
     }
 
-    fetch(`https://fitness-backend-15563671567.europe-west8.run.app/health_metric/cardiovascular/${userId}`, {
+    fetch(`http://localhost:7000/health_metric/cardiovascular/${userId}`, {
       method: "GET",
       credentials: "include",
     })

@@ -28,7 +28,7 @@ const userId = Cookies.get("userId");
       return;
     }
   
-  fetch(`https://fitness-backend-15563671567.europe-west8.run.app/users/${userId}`, {
+  fetch(`http://localhost:7000/users/${userId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

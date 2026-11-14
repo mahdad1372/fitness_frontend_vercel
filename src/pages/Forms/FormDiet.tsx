@@ -108,7 +108,7 @@ export default function Formdiet() {
       setinfo((prev) => ({ ...prev, goaldiet: gymGoalToDietGoalMap[formData.goal_gym] }));
     }
 
-    fetch(`https://fitness-backend-15563671567.europe-west8.run.app/users/${idStr}`, {
+    fetch(`http://localhost:7000/users/${idStr}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -102,7 +102,7 @@ export default function MonthlySalesChart() {
         try {
           const id = Cookies.get("userId"); // 👈 cookie name "token"
   
-          const response = await fetch(`https://fitness-backend-15563671567.europe-west8.run.app/foods/food_user_id/${id}`, {
+          const response = await fetch(`http://localhost:7000/foods/food_user_id/${id}`, {
             method: "GET"
           });
   

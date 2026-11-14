@@ -16,7 +16,7 @@ export default function MonthlyTarget() {
           const userId = Cookies.get("userId"); // get userId from cookies
           if (!userId) return;
   
-          const response = await fetch(`https://fitness-backend-15563671567.europe-west8.run.app/users/bmi/${userId}`);
+          const response = await fetch(`http://localhost:7000/users/bmi/${userId}`);
           if (!response.ok) throw new Error("Failed to fetch BMI");
   
           const data = await response.json();

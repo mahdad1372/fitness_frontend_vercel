@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { Exercise, PathResult } from "../types/exerciseGraph";
 
-const BASE_URL = "https://fitness-backend-15563671567.europe-west8.run.app/api/exercises";
+const BASE_URL = "http://localhost:7000/api/exercises";
 
 function authHeaders(): HeadersInit {
   const token = Cookies.get("token");

@@ -47,7 +47,7 @@ useEffect(() => {
  
 
   if (formData.editfood === true) {
-fetch(`https://fitness-backend-15563671567.europe-west8.run.app/foods/${formData.food_id}`)
+fetch(`http://localhost:7000/foods/${formData.food_id}`)
   .then((response) => response.json())
   .then((data) => {
     console.log(data);
@@ -83,7 +83,7 @@ fetch(`https://fitness-backend-15563671567.europe-west8.run.app/foods/${formData
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 if(formData.editfood === true){
-   await fetch(`https://fitness-backend-15563671567.europe-west8.run.app/foods/updatefoods/${formData.food_id}`, {
+   await fetch(`http://localhost:7000/foods/updatefoods/${formData.food_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +94,7 @@ if(formData.editfood === true){
     navigate("/food-tables")
 }else{
     try {
-      const response = await fetch("https://fitness-backend-15563671567.europe-west8.run.app/foods/addfoods", {
+      const response = await fetch("http://localhost:7000/foods/addfoods", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

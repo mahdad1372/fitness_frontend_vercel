@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const BASE_URL = "https://fitness-backend-15563671567.europe-west8.run.app";
+const BASE_URL = "http://localhost:7000";
 
 function authHeaders(): HeadersInit {
   const token = Cookies.get("token");

@@ -53,7 +53,7 @@ useEffect(() => {
        localStorage.setItem("turnNotified","No");
       if(formData.chatroom__free === true && role === "USER"){
           await fetch(
-          `https://fitness-backend-15563671567.europe-west8.run.app/waitingroom/deletewaitingroom/${Number(userId)}`,
+          `http://localhost:7000/waitingroom/deletewaitingroom/${Number(userId)}`,
           {
           method: "DELETE",
           headers: {
@@ -63,7 +63,7 @@ useEffect(() => {
         }
       );
         await fetch(
-          `https://fitness-backend-15563671567.europe-west8.run.app/chatroom/updatechatroom/${formData.chatroom_id_number}`,
+          `http://localhost:7000/chatroom/updatechatroom/${formData.chatroom_id_number}`,
           {
           method: "PUT",
           headers: {
@@ -88,7 +88,7 @@ useEffect(() => {
 
       // Check room size FIRST
       const countResponse = await fetch(
-        "https://fitness-backend-15563671567.europe-west8.run.app/numberchatpeople"
+        "http://localhost:7000/numberchatpeople"
       );
 
       const count = await countResponse.json();
@@ -102,7 +102,7 @@ useEffect(() => {
 
       // Only add user if room is not full
       // const addResponse = await fetch(
-      //   "https://fitness-backend-15563671567.europe-west8.run.app/addpeople",
+      //   "http://localhost:7000/addpeople",
       //   {
       //     method: "POST",
       //     headers: {
@@ -121,7 +121,7 @@ useEffect(() => {
       // }
 
       const response = await fetch(
-        "https://fitness-backend-15563671567.europe-west8.run.app/users/me",
+        "http://localhost:7000/users/me",
         {
           method: "GET",
           headers: {
@@ -171,7 +171,7 @@ useEffect(() => {
      const userId = Cookies.get("userId");
     if (userId) {
        fetch(
-        "https://fitness-backend-15563671567.europe-west8.run.app/addpeople",
+        "http://localhost:7000/addpeople",
         {
           method: "POST",
           headers: {
@@ -325,7 +325,7 @@ const finishChat = async () => {
       const token = Cookies.get("token")
       if(role === "USER"){
         await fetch(
-          `https://fitness-backend-15563671567.europe-west8.run.app/chatroom/updatechatroom/${formData.chatroom_id_number}`,
+          `http://localhost:7000/chatroom/updatechatroom/${formData.chatroom_id_number}`,
           {
           method: "PUT",
           headers: {
@@ -342,7 +342,7 @@ const finishChat = async () => {
       }
     if (userId) {
       await fetch(
-        "https://fitness-backend-15563671567.europe-west8.run.app/removepeople",
+        "http://localhost:7000/removepeople",
         {
           method: "POST",
           headers: {

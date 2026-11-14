@@ -90,17 +90,33 @@ export interface MealPlanRequest {
   manualProtein?: number;
   manualCarbs?: number;
   manualFat?: number;
+  // The checked candidate foods with their portion sizes. When present the
+  // backend uses ONLY these (scaling each food's per-100g macros by
+  // grams / 100); excludeFoodIds is the legacy, fixed-100g alternative.
+  foods?: FoodPortion[];
   excludeFoodIds?: number[];
+}
+
+export interface FoodPortion {
+  foodId: number;
+  grams: number;
 }
 
 export interface PlannedFood {
   foodId: number;
   name: string;
   mealSlot: string;
+  // Already scaled to `grams` by the backend.
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
+  grams?: number | null;
+}
+
+// Foods stores macros per 100g - scale them to a portion size.
+export function scaleMacro(per100g: number, grams: number): number {
+  return (per100g * grams) / 100;
 }
 
 export interface MealPlanResponse {
@@ -118,7 +134,7 @@ export interface MealPlanResponse {
 
 // Foods as the /foods endpoints return them (snake_case, matching the
 // Foods JPA entity directly) - kept separate from PlannedFood, which is
-// the planner's own camelCase response shape.
+// the planner's own camelCase response shape. Macros are per 100g.
 export interface FoodRow {
   food_id: number;
   user_id: number;

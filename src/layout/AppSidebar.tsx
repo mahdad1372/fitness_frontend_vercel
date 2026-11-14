@@ -82,13 +82,14 @@ const navItems: NavItem[] = [
     name: "User Profile",
     path: "/profile",
   },
-  {
+  ...(role !== "COACH" ? [{
   name: "Training Planner",
   icon: <CalenderIcon />,
   subItems: [
     { name: "Smart Weekly Planner", path: "/smart-weekly-planner", pro: false },
+    { name: "Global Fitness Optimizer", path: "/global-optimizer", pro: false, new: true },
   ],
-},
+}] : []),
   ...(userRole !== "ADMIN" ? [
   {
     name: "Forms",
@@ -152,13 +153,13 @@ const navItems: NavItem[] = [
     ],
   }
       ]
-    : []),{
+    : []),...(role !== "COACH" ? [{
   name: "Nutrition",
   icon: <PieChartIcon />,
   subItems: [
     { name: "Smart Meal Planner", path: "/smart-meal-planner", pro: false, new: true },
   ],
-  },
+  }] : []),
     ...(hasPrivateDiet && role != "ADMIN" && role != "COACH"
     ? [
       {
@@ -202,11 +203,15 @@ const navItems: NavItem[] = [
           name: "Scheduling",
           icon: <CalenderIcon />,
           subItems: [
-            {
-              name: "Trainer & Equipment Scheduler",
-              path: "/resource-scheduler",
-              pro: false,
-            },
+            ...(role !== "COACH"
+              ? [
+                  {
+                    name: "Trainer & Equipment Scheduler",
+                    path: "/resource-scheduler",
+                    pro: false,
+                  },
+                ]
+              : []),
             ...(role === "COACH"
               ? [
                   {
@@ -249,7 +254,7 @@ const navItems: NavItem[] = [
         throw new Error("Unauthorized");
       }
 
-      const role = await fetch("https://fitness-backend-15563671567.europe-west8.run.app/users/me", {
+      const role = await fetch("http://localhost:7000/users/me", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -262,7 +267,7 @@ const navItems: NavItem[] = [
       }else{
         const Role = await role.json();
         setrole(Role.role);
-        const url = `https://fitness-backend-15563671567.europe-west8.run.app/cart/findbyuserid/${userId}`;
+        const url = `http://localhost:7000/cart/findbyuserid/${userId}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -279,7 +284,7 @@ const navItems: NavItem[] = [
         }else{
           if(data.some((item: { cart_item: string; }) => item.cart_item === "PRIVATE COACH")){
             const coachid = data.filter((item: { cart_item: string; }) => item.cart_item === "PRIVATE COACH")[0].coach_id
-            const url = `https://fitness-backend-15563671567.europe-west8.run.app/chatroom/coach/${Number(coachid)}`;
+            const url = `http://localhost:7000/chatroom/coach/${Number(coachid)}`;
             const response = await fetch(url, {
               method: "GET",
               headers: {

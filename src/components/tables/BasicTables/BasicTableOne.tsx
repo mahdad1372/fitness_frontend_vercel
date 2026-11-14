@@ -123,8 +123,8 @@ export default function BasicTableOne() {
         const token = Cookies.get("token"); // 👈 cookie name "token"
         const url =
         userRole === "ADMIN"
-          ? "https://fitness-backend-15563671567.europe-west8.run.app/users/all"
-          : `https://fitness-backend-15563671567.europe-west8.run.app/users/${userId}`;
+          ? "http://localhost:7000/users/all"
+          : `http://localhost:7000/users/${userId}`;
 
       const response = await fetch(url, {
         method: "GET",
@@ -168,7 +168,7 @@ const handleDeleteUser = async (id: number) => {
 
   try {
     const response = await fetch(
-      `https://fitness-backend-15563671567.europe-west8.run.app/users/${id}`,
+      `http://localhost:7000/users/${id}`,
       {
         method: "DELETE",
         headers: {

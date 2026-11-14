@@ -22,7 +22,7 @@ const { formData, setFormData, startWorkout } = useWorkout();
 useEffect(() => {
   if (formData.edithealthmetric === true) {
     console.log("hello")
-fetch(`https://fitness-backend-15563671567.europe-west8.run.app/health_metric/findbyhealth_id/${formData.health_id}`)
+fetch(`http://localhost:7000/health_metric/findbyhealth_id/${formData.health_id}`)
   .then((response) => response.json())
   .then((data) => {
  
@@ -76,7 +76,7 @@ fetch(`https://fitness-backend-15563671567.europe-west8.run.app/health_metric/fi
     e.preventDefault();
 if(formData.edithealthmetric === true){
    
-   await fetch(`https://fitness-backend-15563671567.europe-west8.run.app/health_metric/update_healthmetric/${formData.health_id}`, {
+   await fetch(`http://localhost:7000/health_metric/update_healthmetric/${formData.health_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -87,7 +87,7 @@ if(formData.edithealthmetric === true){
     navigate("/health-tables")
 }else{
     try {
-      const response = await fetch("https://fitness-backend-15563671567.europe-west8.run.app/health_metric/addmetrics", {
+      const response = await fetch("http://localhost:7000/health_metric/addmetrics", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

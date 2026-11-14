@@ -28,7 +28,7 @@ useEffect(() => {
   const fetchNumberPeople = async () => {
     try {
       const response = await fetch(
-        "https://fitness-backend-15563671567.europe-west8.run.app/numberchatpeople",
+        "http://localhost:7000/numberchatpeople",
         {
           method: "GET",
           headers: {
@@ -96,7 +96,7 @@ useEffect(() => {
 
     try {
     const response = await fetch(
-      `https://fitness-backend-15563671567.europe-west8.run.app/waitingroom/chatroom/${formData.chatroom_id_number}`,
+      `http://localhost:7000/waitingroom/chatroom/${formData.chatroom_id_number}`,
       {
         method: "GET",
         headers: {
@@ -116,7 +116,7 @@ useEffect(() => {
 
    
       // const waitlist = await fetch(
-      //   "https://fitness-backend-15563671567.europe-west8.run.app/getwaitinglist"
+      //   "http://localhost:7000/getwaitinglist"
       // );
 
       // const result = await waitlist.json();
@@ -150,7 +150,7 @@ const joinChatRoom = async () => {
 
   if (userId) {
     await fetch(
-      "https://fitness-backend-15563671567.europe-west8.run.app/addpeople",
+      "http://localhost:7000/addpeople",
       {
         method: "POST",
         headers: {
@@ -164,7 +164,7 @@ const joinChatRoom = async () => {
     );
       if (userId) {
     await fetch(
-      "https://fitness-backend-15563671567.europe-west8.run.app/removewaitinglist",
+      "http://localhost:7000/removewaitinglist",
       {
         method: "POST",
         headers: {
@@ -188,7 +188,7 @@ const addWaitingRoom = async () => {
   try {
     // First check if user is already in the queue
     const checkResponse = await fetch(
-      `https://fitness-backend-15563671567.europe-west8.run.app/waitingroom/chatroom/${formData.chatroom_id_number}`,
+      `http://localhost:7000/waitingroom/chatroom/${formData.chatroom_id_number}`,
       {
         method: "GET",
         headers: {
@@ -212,7 +212,7 @@ const addWaitingRoom = async () => {
 
     // Not in queue → add them
     const response = await fetch(
-      "https://fitness-backend-15563671567.europe-west8.run.app/waitingroom/addwaitingroom",
+      "http://localhost:7000/waitingroom/addwaitingroom",
       {
         method: "POST",
         headers: {
@@ -276,7 +276,7 @@ const addWaitingRoom = async () => {
 //   if (!chatroomfree) {
 //     setwaitlist(true);
 //     const userId = Cookies.get("userId");
-//    const waitlist = await fetch(`https://fitness-backend-15563671567.europe-west8.run.app/getwaitinglist`, {
+//    const waitlist = await fetch(`http://localhost:7000/getwaitinglist`, {
 //         method: "GET",
 //         headers: {
 //           "Content-Type": "application/json",
@@ -289,7 +289,7 @@ const addWaitingRoom = async () => {
 //            "turnNotified"
 //             );
 //           fetch(
-//            "https://fitness-backend-15563671567.europe-west8.run.app/addwaitinglist",
+//            "http://localhost:7000/addwaitinglist",
 //            {
 //              method: "POST",
 //              headers: {

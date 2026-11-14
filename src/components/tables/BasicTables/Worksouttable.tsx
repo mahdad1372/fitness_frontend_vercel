@@ -30,9 +30,9 @@ export default function Worksouttable() {
 
       let url = "";
       if (userRole === "Admin") {
-        url = "https://fitness-backend-15563671567.europe-west8.run.app/worksout/all";
+        url = "http://localhost:7000/worksout/all";
       } else {
-        url = `https://fitness-backend-15563671567.europe-west8.run.app/worksout/${userId}`;
+        url = `http://localhost:7000/worksout/${userId}`;
       }
 
       const response = await fetch(url, {
@@ -75,7 +75,7 @@ export default function Worksouttable() {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`https://fitness-backend-15563671567.europe-west8.run.app/worksout/deleteactivity/${id}`, {
+      const response = await fetch(`http://localhost:7000/worksout/deleteactivity/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

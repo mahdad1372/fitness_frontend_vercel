@@ -45,7 +45,7 @@ useEffect(() => {
 
       if (formData.editworkout === true) {
         const response = await fetch(
-          `https://fitness-backend-15563671567.europe-west8.run.app/worksout/getworkouts/${formData.workout_id}`,
+          `http://localhost:7000/worksout/getworkouts/${formData.workout_id}`,
           {
             method: "GET",
             headers: {
@@ -96,7 +96,7 @@ useEffect(() => {
     e.preventDefault();
     const token = Cookies.get("token");
 if(formData.editworkout === true){
-   await fetch(`https://fitness-backend-15563671567.europe-west8.run.app/worksout/updateworkout/${formData.workout_id}`, {
+   await fetch(`http://localhost:7000/worksout/updateworkout/${formData.workout_id}`, {
         method: "PUT",
            headers: {
               Authorization: `Bearer ${token}`,
@@ -108,7 +108,7 @@ if(formData.editworkout === true){
     navigate("/workouts-tables")
 }else {
     try {
-      const response = await fetch("https://fitness-backend-15563671567.europe-west8.run.app/worksout/addworksout", {
+      const response = await fetch("http://localhost:7000/worksout/addworksout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

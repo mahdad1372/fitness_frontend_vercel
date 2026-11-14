@@ -33,7 +33,7 @@ const [afterImageUrl, setAfterImageUrl] = useState<string | null>(null);
   console.log(formData2.end_date)
 useEffect(() => {
   if (formData.editgoal === true) {
-    fetch(`https://fitness-backend-15563671567.europe-west8.run.app/goals/${formData.goal_id}`)
+    fetch(`http://localhost:7000/goals/${formData.goal_id}`)
       .then((response) => response.json())
       .then((data) => {
         const goal = data[0];
@@ -51,11 +51,11 @@ useEffect(() => {
         });
 
         setBeforeImageUrl(
-          `https://fitness-backend-15563671567.europe-west8.run.app/goals/before-image/${data.goal_id}`
+          `http://localhost:7000/goals/before-image/${data.goal_id}`
         );
 
         setAfterImageUrl(
-          `https://fitness-backend-15563671567.europe-west8.run.app/goals/after-image/${data.goal_id}`
+          `http://localhost:7000/goals/after-image/${data.goal_id}`
         );
       });
   }
@@ -142,7 +142,7 @@ if (formData.editgoal === true) {
   }
 
   const response = await fetch(
-    `https://fitness-backend-15563671567.europe-west8.run.app/goals/updategoal/${formData.goal_id}`,
+    `http://localhost:7000/goals/updategoal/${formData.goal_id}`,
     {
       method: "PUT",
       body: data,
@@ -186,7 +186,7 @@ if (formData.editgoal === true) {
 
    
       const response = await fetch(
-        "https://fitness-backend-15563671567.europe-west8.run.app/goals/add",
+        "http://localhost:7000/goals/add",
         {
           method: "POST",
           body: data,
@@ -198,7 +198,7 @@ if (formData.editgoal === true) {
     const token = Cookies.get("token");
     const id = Cookies.get("userId");
     const chatroomResponse = await fetch(
-      `https://fitness-backend-15563671567.europe-west8.run.app/chatroom/create/${id}`,
+      `http://localhost:7000/chatroom/create/${id}`,
       {
         method: "POST",
         headers: {

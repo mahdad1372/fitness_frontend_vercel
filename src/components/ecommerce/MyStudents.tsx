@@ -47,7 +47,7 @@ export default function MyStudents() {
 
         // 1) All cart items in the system — the only rows that matter here are
         // "PRIVATE COACH" purchases, since those are the only ones that carry a coach_id.
-        const cartRes = await fetch("https://fitness-backend-15563671567.europe-west8.run.app/cart/all", {
+        const cartRes = await fetch("http://localhost:7000/cart/all", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ export default function MyStudents() {
         const studentResults = await Promise.all(
           uniqueClients.map(async (item) => {
             const userRes = await fetch(
-              `https://fitness-backend-15563671567.europe-west8.run.app/users/${item.user_id}`,
+              `http://localhost:7000/users/${item.user_id}`,
               {
                 method: "GET",
                 headers: {
