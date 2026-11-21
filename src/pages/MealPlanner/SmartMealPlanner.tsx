@@ -19,11 +19,35 @@ import {
   calculateMacroTargets,
   FoodRow,
   MealPlanResponse,
+  PlannedFood,
   scaleMacro,
 } from "../../types/mealPlanner";
 
 const DEFAULT_GRAMS = 100;
 const MAX_GRAMS = 5000;
+
+// Explains, in plain language, why the optimizer left one candidate food
+// out of the plan: which target(s) would be pushed over if it were added
+// on top of what was already selected.
+function exclusionReason(food: PlannedFood, plan: MealPlanResponse): string {
+  const dims: { name: string; combined: number; target: number; unit: string }[] = [
+    { name: "calories", combined: plan.achievedCalories + food.calories, target: plan.targetCalories, unit: " kcal" },
+    { name: "protein", combined: plan.achievedProtein + food.protein, target: plan.targetProtein, unit: "g" },
+    { name: "carbs", combined: plan.achievedCarbs + food.carbs, target: plan.targetCarbs, unit: "g" },
+    { name: "fat", combined: plan.achievedFat + food.fat, target: plan.targetFat, unit: "g" },
+  ];
+  const over = dims
+    .filter((d) => d.combined > d.target)
+    .sort((a, b) => (b.combined - b.target) - (a.combined - a.target));
+
+  if (over.length === 0) {
+    return "this could have fit on its own, but a different combination of foods matched all four targets more closely overall.";
+  }
+  const parts = over.map(
+    (d) => `${d.name} over consumed (${Math.round(d.combined)}${d.unit} vs your ${Math.round(d.target)}${d.unit} target)`
+  );
+  return `adding it would make ${parts.join(" and ")}.`;
+}
 
 // The grams box holds raw text so the user can clear it mid-edit; this is
 // the number it represents, or null if it isn't a usable portion size.
@@ -42,10 +66,13 @@ function fmt(n: number): string {
 // Meter: fill carries severity (good/off/far off), the unfilled track is a
 // lighter step of the SAME hue rather than plain grey, and status is never
 // color-alone - a text badge always accompanies it.
-function severityOf(achieved: number, target: number): "good" | "warn" | "bad" {
+function severityOf(achieved: number, target: number): "good" | "warn" | "bad" | "over" {
   if (target <= 0) return "bad";
   const ratio = achieved / target;
   if (ratio >= 0.9 && ratio <= 1.1) return "good";
+  // Far UNDER and far OVER get their own distinct label/color - "bad" (Far
+  // off) means far under from here on; far over is its own "over" state.
+  if (ratio > 1.25) return "over";
   if (ratio >= 0.75 && ratio <= 1.25) return "warn";
   return "bad";
 }
@@ -54,6 +81,7 @@ const SEVERITY_STYLE: Record<string, { fill: string; track: string; text: string
   good: { fill: "#12b76a", track: "#d1fadf", text: "#067647", label: "On target" },
   warn: { fill: "#f79009", track: "#fef0c7", text: "#b54708", label: "Off target" },
   bad: { fill: "#f04438", track: "#fee4e2", text: "#b42318", label: "Far off" },
+  over: { fill: "#9b2c6f", track: "#fbe5f3", text: "#7a1d57", label: "Over consumed" },
 };
 
 function Meter({ label, unit, achieved, target }: { label: string; unit: string; achieved: number; target: number }) {
@@ -162,6 +190,48 @@ export default function SmartMealPlanner() {
   const checkedFoods = foods.filter((f) => !excludedIds.has(f.food_id));
   // Only checked foods are sent, so only their grams need to be valid.
   const hasInvalidGrams = checkedFoods.some((f) => parseGrams(gramsTextOf(f.food_id)) === null);
+
+  // Plain sum of every checked food at its entered portion, ignoring the
+  // four-ceiling optimizer entirely - this is "what if I just ate
+  // everything I've checked", so it's clear right away when that would
+  // blow past today's targets, independent of what "Optimize My Day"
+  // would actually pick.
+  const checkedTotals = useMemo(() => {
+    let calories = 0, protein = 0, carbs = 0, fat = 0;
+    for (const f of checkedFoods) {
+      const grams = parseGrams(gramsTextOf(f.food_id));
+      if (grams === null) continue;
+      calories += scaleMacro(f.calories, grams);
+      protein += scaleMacro(f.protein, grams);
+      carbs += scaleMacro(f.carbohydrates, grams);
+      fat += scaleMacro(f.fats, grams);
+    }
+    const round1 = (n: number) => Math.round(n * 10) / 10;
+    return { calories: Math.round(calories), protein: round1(protein), carbs: round1(carbs), fat: round1(fat) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkedFoods, gramsText]);
+
+  // Plain sum across every food the optimizer left out, so it's obvious
+  // at a glance how much total nutrition is sitting in "Not included".
+  const excludedTotals = useMemo(() => {
+    if (!plan) return null;
+    const round1 = (n: number) => Math.round(n * 10) / 10;
+    const totals = plan.excludedFoods.reduce(
+      (acc, f) => ({
+        calories: acc.calories + f.calories,
+        protein: acc.protein + f.protein,
+        carbs: acc.carbs + f.carbs,
+        fat: acc.fat + f.fat,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+    );
+    return {
+      calories: Math.round(totals.calories),
+      protein: round1(totals.protein),
+      carbs: round1(totals.carbs),
+      fat: round1(totals.fat),
+    };
+  }, [plan]);
 
   const handleOptimize = async () => {
     setGenerating(true);
@@ -407,6 +477,20 @@ export default function SmartMealPlanner() {
               </div>
             </ComponentCard>
 
+            {targets && checkedFoods.length > 0 && (
+              <ComponentCard
+                title="If you ate everything checked"
+                desc="A plain total of every checked food at its entered portion, ignoring the optimizer entirely - so you can see right away whether your current selections would blow past today's targets."
+              >
+                <div className="flex gap-7 flex-wrap">
+                  <Meter label="Calories" unit=" kcal" achieved={checkedTotals.calories} target={targets.calories} />
+                  <Meter label="Protein" unit="g" achieved={checkedTotals.protein} target={targets.protein} />
+                  <Meter label="Carbs" unit="g" achieved={checkedTotals.carbs} target={targets.carbs} />
+                  <Meter label="Fat" unit="g" achieved={checkedTotals.fat} target={targets.fat} />
+                </div>
+              </ComponentCard>
+            )}
+
             <div className="rounded-2xl border border-[#dde9ff] bg-[#ecf3ff] p-5 flex items-center justify-between gap-4 flex-wrap dark:border-brand-800 dark:bg-brand-950">
               <p className="text-sm text-brand-600 dark:text-brand-300 max-w-3xl">
                 This isn't a single-budget knapsack like the Weekly Planner - four targets (calories, protein,
@@ -476,17 +560,34 @@ export default function SmartMealPlanner() {
                   <ComponentCard title="Not included">
                     <div className="flex flex-col divide-y divide-gray-100 dark:divide-white/[0.05]">
                       {plan.excludedFoods.map((f) => (
-                        <div key={f.foodId} className="flex items-center justify-between py-2.5">
-                          <span className="text-sm text-gray-400">
-                            <span className="line-through">{f.name}</span>
-                            {f.grams != null && <span> &middot; {fmt(f.grams)} g</span>}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            {f.calories} kcal &middot; {f.fat}g fat
+                        <div key={f.foodId} className="flex flex-col gap-1 py-2.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-400">
+                              <span className="line-through">{f.name}</span>
+                              {f.grams != null && <span> &middot; {fmt(f.grams)} g</span>}
+                            </span>
+                            <span className="text-xs text-gray-400">
+                              {f.calories} kcal &middot; {f.protein}g P &middot; {f.carbs}g C &middot; {f.fat}g F
+                            </span>
+                          </div>
+                          <span className="text-xs text-amber-600 dark:text-amber-400">
+                            {f.name}
+                            {f.grams != null && ` \u00b7 ${fmt(f.grams)}g`} not included &mdash; {exclusionReason(f, plan)}
                           </span>
                         </div>
                       ))}
                     </div>
+                    {excludedTotals && (
+                      <div className="flex items-center justify-between pt-3 mt-1 border-t border-gray-200 dark:border-white/[0.08]">
+                        <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                          Total not included ({plan.excludedFoods.length} food{plan.excludedFoods.length === 1 ? "" : "s"})
+                        </span>
+                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                          {excludedTotals.calories} kcal &middot; {excludedTotals.protein}g P &middot;{" "}
+                          {excludedTotals.carbs}g C &middot; {excludedTotals.fat}g F
+                        </span>
+                      </div>
+                    )}
                   </ComponentCard>
                 )}
 

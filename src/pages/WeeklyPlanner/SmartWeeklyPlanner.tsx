@@ -275,6 +275,13 @@ export default function SmartWeeklyPlanner() {
                     const items: PlannedExercise[] = plan.planByDay[day] ?? [];
                     const used = items.reduce((sum, i) => sum + i.durationMinutes, 0);
                     const budget = dailyBudgets[day] || 0;
+                    // Below 80% of the day's own budget almost always means
+                    // the scheduler's two fair-share/top-up passes genuinely
+                    // ran out of exercises in the selected muscle groups to
+                    // offer today, not a scheduling-conflict issue (those
+                    // still get picked and counted in `used`, just flagged
+                    // separately below as "Couldn't schedule").
+                    const shortfall = budget > 0 && used < budget * 0.8;
                     return (
                       <div key={day} className="flex-1 min-w-[160px] flex flex-col gap-2">
                         <div className="pb-2 border-b border-gray-200 dark:border-white/[0.05]">
@@ -283,6 +290,13 @@ export default function SmartWeeklyPlanner() {
                             {budget > 0 ? `${used} / ${budget} min` : "Rest"}
                           </div>
                         </div>
+                        {shortfall && (
+                          <div className="text-[11px] text-amber-600 dark:text-amber-400 leading-relaxed">
+                            Planned {budget} min but only scheduled {used} min &mdash; the other {budget - used} min
+                            couldn't be filled because your selected muscle groups ran out of exercises to
+                            schedule. Try picking more muscle groups, or lowering this day's time budget.
+                          </div>
+                        )}
                         {budget === 0 || items.length === 0 ? (
                           <div className="flex-1 flex items-center justify-center text-xs italic text-gray-400 py-6">
                             {budget === 0 ? "Rest day" : "Nothing scheduled"}
